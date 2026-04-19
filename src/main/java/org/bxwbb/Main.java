@@ -1,11 +1,3 @@
-# BlockUI(V0.1.0)
-
-#### 介绍
-BlockUI是一个模仿我的世界（大部分为基岩版）UI的UI库，使用原生Java Swing编写，目前处于早起开发阶段，可扩展。
-
-### 使用例子
-创建三个竖向叠放的按钮
-```java
 package org.bxwbb;
 
 import org.bxwbb.ui.BaseUI;
@@ -70,40 +62,3 @@ public class Main {
         blockFrame.setVisible(true);
     }
 }
-```
-
-### 特性
-1. 有基本控件：BlockPane、BlockLabel、BlockButton等
-2. 有Layout布局类
-3. 可装卸的UI委托
-
-### 控件介绍
-#### BlockPane
-一个基本面板，有内外两种边框，内边框自动设置颜色和高光，还可以设置内部阴影高度。
-#### BlockLabelPane
-含有一个BlockLabel组件的面板
-#### BlockImagePane
-含有一个BlockImage组件的面板
-#### BlockLabel
-可以显示单行文字的组件，不支持富文本，默认居中对齐，默认字体为微软雅黑，隐藏超出部分
-#### BlockButton
-一个按钮组件
-#### BlockImage
-一个图片组件，可设置压缩方式，可设置颜色蒙版
-#### BlockImageButton
-一个图片按钮组件
-#### BlockLabelButton
-一个文字按钮组件
-#### BlockToggleButton
-一个点击后才切换状态的按钮组件
-
-### 布局介绍
-#### NullLayout
-自由布局，完全不管理子组件的位置，子组件会按照添加的顺序依次显示
-#### LinearLayout
-线性布局，子组件会按照添加的顺序依次显示，可设置横向或纵向排列，宽度（或高度）自动根据权重与最大最小值调整，溢出控件裁剪显示。
-
-### 贡献方式
-直接在github上提交pr即可，感谢您的贡献
-
-感谢使用

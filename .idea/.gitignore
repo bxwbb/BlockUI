@@ -1,0 +1,5 @@
+# 默认忽略的文件
+/../../../:BlockUI/.idea/shelf/
+/../../../:BlockUI/.idea/workspace.xml
+# 依赖于环境的 Maven 主目录路径
+/../../../:BlockUI/.idea/mavenHomeManager.xml
