@@ -35,14 +35,17 @@ public class LinearLayout extends AbstractLinearLayout {
 
             int totalW = 0;
             int maxH = 0;
+            int visibleCount = 0;
             for (int i = 0; i < size; i++) {
                 BaseUI c = children.get(i);
+                if (!c.isVisible()) continue;
                 int w = c.getWidth();
                 totalW += w;
                 int h = c.getHeight();
                 if (h > maxH) maxH = h;
+                visibleCount++;
             }
-            totalW += spaceX * (size - 1);
+            totalW += spaceX * Math.max(0, visibleCount - 1);
 
             int startX = 0;
             int ax = align.x;
@@ -61,6 +64,7 @@ public class LinearLayout extends AbstractLinearLayout {
             }
 
             for (BaseUI c : children) {
+                if (!c.isVisible()) continue;
                 c.setGreatHeight(pH);
                 c.setLayout(startX, startY);
                 startX += c.getWidth() + spaceX;
@@ -71,14 +75,17 @@ public class LinearLayout extends AbstractLinearLayout {
 
             int totalH = 0;
             int maxW = 0;
+            int visibleCount = 0;
             for (int i = 0; i < size; i++) {
                 BaseUI c = children.get(i);
+                if (!c.isVisible()) continue;
                 int h = c.getHeight();
                 totalH += h;
                 int w = c.getWidth();
                 if (w > maxW) maxW = w;
+                visibleCount++;
             }
-            totalH += spaceY * (size - 1);
+            totalH += spaceY * Math.max(0, visibleCount - 1);
 
             int startY = 0;
             int ay = align.y;
@@ -97,6 +104,7 @@ public class LinearLayout extends AbstractLinearLayout {
             }
 
             for (BaseUI c : children) {
+                if (!c.isVisible()) continue;
                 c.setGreatWidth(pW);
                 c.setLayout(startX, startY);
                 startY += c.getHeight() + spaceY;
@@ -105,17 +113,20 @@ public class LinearLayout extends AbstractLinearLayout {
     }
 
     private void calcFlexH(List<BaseUI> children, int size, int usable, int space) {
-        int totalSpace = space * (size - 1);
+        int totalSpace;
         int totalMin = 0;
+        int visibleCount = 0;
 
         for (int i = 0; i < size; i++) {
             BaseUI c = children.get(i);
+            if (!c.isVisible()) continue;
             c.setGreatWidth(c.getMinWidth());
             totalMin += c.getWidth();
+            visibleCount++;
         }
+        totalSpace = space * Math.max(0, visibleCount - 1);
 
         int free = usable - totalMin - totalSpace;
-        if (free <= 0) return;
 
         boolean[] frozen = new boolean[size];
         int retry = 6;
@@ -123,14 +134,16 @@ public class LinearLayout extends AbstractLinearLayout {
         while (free > 0 && retry-- > 0) {
             float totalWeight = 0;
             for (int i = 0; i < size; i++) {
-                if (!frozen[i]) totalWeight += children.get(i).getWeightWidth();
+                BaseUI c = children.get(i);
+                if (!c.isVisible() || frozen[i]) continue;
+                totalWeight += c.getWeightWidth();
             }
             if (totalWeight <= 0) break;
 
             int used = 0;
             for (int i = 0; i < size; i++) {
                 BaseUI c = children.get(i);
-                if (frozen[i]) continue;
+                if (!c.isVisible() || frozen[i]) continue;
 
                 int add = (int) (free * (c.getWeightWidth() / totalWeight));
                 int old = c.getWidth();
@@ -145,17 +158,20 @@ public class LinearLayout extends AbstractLinearLayout {
     }
 
     private void calcFlexV(List<BaseUI> children, int size, int usable, int space) {
-        int totalSpace = space * (size - 1);
+        int totalSpace;
         int totalMin = 0;
+        int visibleCount = 0;
 
         for (int i = 0; i < size; i++) {
             BaseUI c = children.get(i);
+            if (!c.isVisible()) continue;
             c.setGreatHeight(c.getMinHeight());
             totalMin += c.getHeight();
+            visibleCount++;
         }
+        totalSpace = space * Math.max(0, visibleCount - 1);
 
         int free = usable - totalMin - totalSpace;
-        if (free <= 0) return;
 
         boolean[] frozen = new boolean[size];
         int retry = 6;
@@ -163,14 +179,16 @@ public class LinearLayout extends AbstractLinearLayout {
         while (free > 0 && retry-- > 0) {
             float totalWeight = 0;
             for (int i = 0; i < size; i++) {
-                if (!frozen[i]) totalWeight += children.get(i).getWeightHeight();
+                BaseUI c = children.get(i);
+                if (!c.isVisible() || frozen[i]) continue;
+                totalWeight += c.getWeightHeight();
             }
             if (totalWeight <= 0) break;
 
             int used = 0;
             for (int i = 0; i < size; i++) {
                 BaseUI c = children.get(i);
-                if (frozen[i]) continue;
+                if (!c.isVisible() || frozen[i]) continue;
 
                 int add = (int) (free * (c.getWeightHeight() / totalWeight));
                 int old = c.getHeight();

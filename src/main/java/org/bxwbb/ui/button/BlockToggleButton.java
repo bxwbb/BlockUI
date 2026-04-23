@@ -7,8 +7,8 @@ import java.awt.*;
 
 public class BlockToggleButton extends AbstractBlockButton {
 
-    private Color baseBackgroundColor;
-    private Color baseOuterBorderColor;
+    protected Color baseBackgroundColor;
+    protected Color baseOuterBorderColor;
 
     public BlockToggleButton() {
         super();
@@ -21,29 +21,21 @@ public class BlockToggleButton extends AbstractBlockButton {
     }
 
     private void init() {
+        setUI(new BlockToggleButtonUI());
         horizontalExtension();
         verticalExtension();
         baseBackgroundColor = getBackgroundColor();
         baseOuterBorderColor = getBorderOuterColor();
         this.setLayout(new LinearLayout());
-        this.addOnMouseEntered(e -> {
-            this.setBorderOuterColor(Color.WHITE);
-            this.setHover(true);
-        });
-        this.addOnMouseExited(e -> {
-            this.setBorderOuterColor(baseOuterBorderColor);
-            this.setHover(false);
-        });
+        this.addOnMouseEntered(e -> this.setHover(true));
+        this.addOnMouseExited(e -> this.setHover(false));
         this.addOnMousePressed(e -> this.setBackgroundColor(ColorUtil.darker(baseBackgroundColor)));
         this.addOnMouseReleased(e -> {
             if (this.isin(e.getX(), e.getY())) {
                 this.onButtonClick(e);
             } else {
-                this.setBorderOuterColor(baseOuterBorderColor);
                 this.setHover(false);
             }
-            this.setDown(!this.isDown());
-            this.setBackgroundColor(this.isDown() ? ColorUtil.brighter(baseBackgroundColor, 2) : baseBackgroundColor);
         });
     }
 }

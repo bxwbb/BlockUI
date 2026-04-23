@@ -12,6 +12,7 @@ public class BlockFrame extends BaseUI implements Window {
     final JFrame jFrame;
     final CanvasPanel canvasPanel = new CanvasPanel(this);
     RenderLoop renderLoop = null;
+    protected BaseUI focus = this;
 
     public BlockFrame() {
         this("窗口标题");
@@ -19,6 +20,7 @@ public class BlockFrame extends BaseUI implements Window {
 
     public BlockFrame(String title) {
         super();
+        BaseUI.root = this;
         jFrame = new JFrame(title);
         jFrame.add(canvasPanel);
         jFrame.setBackground(ColorTheme.COLOR_PROGRAM_BASE);
@@ -36,6 +38,8 @@ public class BlockFrame extends BaseUI implements Window {
                 renderLoop.stop();
             }
         });
+        canvasPanel.setFocusable(true);
+        canvasPanel.requestFocus();
         canvasPanel.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -68,8 +72,34 @@ public class BlockFrame extends BaseUI implements Window {
 
             @Override
             public void mouseMoved(MouseEvent e) {
-                self.onMouseMoved(e);
+                self.onMouseMoved(e, canvasPanel);
             }
+        });
+        canvasPanel.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                getFocus().onKeyTyped(e);
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                getFocus().onKeyPressed(e);
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                getFocus().onKeyReleased(e);
+            }
+        });
+        canvasPanel.addInputMethodListener(new InputMethodListener() {
+            @Override
+            public void inputMethodTextChanged(InputMethodEvent event) {
+                getFocus().onInputMethodTextChanged(event);
+                event.consume();
+            }
+
+            @Override
+            public void caretPositionChanged(InputMethodEvent event) {}
         });
         this.renderLoop = new RenderLoop(this.canvasPanel::repaint);
     }
@@ -79,6 +109,11 @@ public class BlockFrame extends BaseUI implements Window {
         jFrame.getContentPane().setPreferredSize(new Dimension(getWidth(), getHeight()));
         jFrame.pack();
         jFrame.setVisible(visible);
+    }
+
+    @Override
+    public Component getComponent() {
+        return canvasPanel;
     }
 
     public void setWindowPos(int x, int y) {
@@ -102,8 +137,17 @@ public class BlockFrame extends BaseUI implements Window {
 
             window.update();
             window.render((Graphics2D) g);
+            g.setClip(window.getClip());
             window.updateChildren((Graphics2D) g);
         }
     }
 
+    public BaseUI getFocus() {
+        return focus;
+    }
+
+    @Override
+    public void setFocus(BaseUI focus) {
+        this.focus = focus;
+    }
 }

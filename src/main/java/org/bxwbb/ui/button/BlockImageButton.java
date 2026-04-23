@@ -2,15 +2,15 @@ package org.bxwbb.ui.button;
 
 import org.bxwbb.ui.image.BlockImage;
 import org.bxwbb.ui.layout.LinearLayout;
-import org.bxwbb.util.ColorUtil;
 
 import java.awt.*;
 
 public class BlockImageButton extends AbstractBlockButton {
 
     private final BlockImage blockImage = new BlockImage();
-    private Color baseBackgroundColor;
-    private Color baseOuterBorderColor;
+    protected Color baseBackgroundColor;
+    protected Color baseOuterBorderColor;
+    protected Color baseImageColor;
 
     public BlockImageButton() {
         super();
@@ -33,34 +33,24 @@ public class BlockImageButton extends AbstractBlockButton {
     }
 
     private void init() {
+        this.setUI(new BlockImageButtonUI());
         blockImage.horizontalExtension();
         blockImage.verticalExtension();
         blockImage.setMixColor(Color.LIGHT_GRAY);
+        blockImage.setEnabled(false);
         baseBackgroundColor = getBackgroundColor();
-        Color imageColor = blockImage.getMixColor();
+        baseImageColor = blockImage.getMixColor();
         baseOuterBorderColor = getBorderOuterColor();
         this.setLayout(new LinearLayout());
         this.addChild(blockImage);
-        this.addOnMouseEntered(e -> {
-            this.setBorderOuterColor(Color.WHITE);
-            this.setHover(true);
-        });
-        this.addOnMouseExited(e -> {
-            this.setBorderOuterColor(baseOuterBorderColor);
-            this.setHover(false);
-        });
-        this.addOnMousePressed(e -> {
-            this.setBackgroundColor(ColorUtil.darker(baseBackgroundColor));
-            this.getBlockImage().setMixColor(ColorUtil.darker(imageColor));
-            this.setDown(true);
-        });
+        this.addOnMouseEntered(e -> this.setHover(true));
+        this.addOnMouseExited(e -> this.setHover(false));
+        this.addOnMousePressed(e -> this.setDown(true));
         this.addOnMouseReleased(e -> {
             if (this.isin(e.getX(), e.getY())) {
                 this.onButtonClick(e);
                 this.setDown(false);
             }
-            this.setBackgroundColor(baseBackgroundColor);
-            this.getBlockImage().setMixColor(imageColor);
         });
     }
 

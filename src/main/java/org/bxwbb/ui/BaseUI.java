@@ -6,6 +6,8 @@ import org.bxwbb.ui.layout.Layout;
 import org.bxwbb.ui.layout.NullLayout;
 
 import java.awt.*;
+import java.awt.event.InputMethodEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,8 +15,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class BaseUI extends Node {
 
+    protected static BaseUI root = null;
+
     private final List<BaseUI> children = new ArrayList<>();
-    private BaseUI parent = null;
+    private BaseUI parent = root;
 
     private int layoutX = 0;
     private int layoutY = 0;
@@ -39,6 +43,8 @@ public abstract class BaseUI extends Node {
     private boolean isEnabled = true;
     private Layout layout = new NullLayout();
     private Alignment alignment = Alignment.CENTER;
+    private Cursor cursor = Cursor.getDefaultCursor();
+    private Shape clip;
 
     protected final AtomicBoolean needUpdate = new AtomicBoolean(true);
     protected boolean isMouseInto = false;
@@ -51,6 +57,12 @@ public abstract class BaseUI extends Node {
     private final List<EventHandler<MouseEvent>> onMouseExited = new ArrayList<>();
     private final List<EventHandler<MouseEvent>> onMouseDragged = new ArrayList<>();
     private final List<EventHandler<MouseEvent>> onMouseMoved = new ArrayList<>();
+    private final List<EventHandler<MouseEvent>> onGetFocus = new ArrayList<>();
+    private final List<EventHandler<MouseEvent>> onLostFocus = new ArrayList<>();
+    private final List<EventHandler<KeyEvent>> onKeyPressed = new ArrayList<>();
+    private final List<EventHandler<KeyEvent>> onKeyReleased = new ArrayList<>();
+    private final List<EventHandler<KeyEvent>> onKeyTyped = new ArrayList<>();
+    private final List<EventHandler<InputMethodEvent>> onInputMethodTextChanged = new ArrayList<>();
 
     protected UI ui;
 
@@ -178,7 +190,7 @@ public abstract class BaseUI extends Node {
         return isFocus;
     }
 
-    public void setFocus(boolean focus) {
+    protected void setFocus(boolean focus) {
         isFocus = focus;
         this.needUpdate.set(true);
     }
@@ -215,6 +227,30 @@ public abstract class BaseUI extends Node {
         return onMouseMoved;
     }
 
+    public List<EventHandler<MouseEvent>> getOnGetFocus() {
+        return onGetFocus;
+    }
+
+    public List<EventHandler<MouseEvent>> getOnLostFocus() {
+        return onLostFocus;
+    }
+
+    public List<EventHandler<KeyEvent>> getOnKeyPressed() {
+        return onKeyPressed;
+    }
+
+    public List<EventHandler<KeyEvent>> getOnKeyReleased() {
+        return onKeyReleased;
+    }
+
+    public List<EventHandler<KeyEvent>> getOnKeyTyped() {
+        return onKeyTyped;
+    }
+
+    public List<EventHandler<InputMethodEvent>> getOnInputMethodTextChanged() {
+        return onInputMethodTextChanged;
+    }
+
     public void addOnMouseClicked(EventHandler<MouseEvent> handler) {
         this.onMouseClicked.add(handler);
     }
@@ -243,6 +279,30 @@ public abstract class BaseUI extends Node {
         this.onMouseMoved.add(handler);
     }
 
+    public void addOnKeyPressed(EventHandler<KeyEvent> handler) {
+        this.onKeyPressed.add(handler);
+    }
+
+    public void addOnKeyReleased(EventHandler<KeyEvent> handler) {
+        this.onKeyReleased.add(handler);
+    }
+
+    public void addOnKeyTyped(EventHandler<KeyEvent> handler) {
+        this.onKeyTyped.add(handler);
+    }
+
+    public void addOnGetFocus(EventHandler<MouseEvent> handler) {
+        this.onGetFocus.add(handler);
+    }
+
+    public void addOnLostFocus(EventHandler<MouseEvent> handler) {
+        this.onLostFocus.add(handler);
+    }
+
+    public void addOnInputMethodTextChanged(EventHandler<InputMethodEvent> handler) {
+        this.onInputMethodTextChanged.add(handler);
+    }
+
     protected void onMouseClicked(MouseEvent event) {
         if (!this.isEnabled) return;
         if (this.isin(event.getX(), event.getY())) {
@@ -262,6 +322,9 @@ public abstract class BaseUI extends Node {
         if (!this.isEnabled) return;
         if (this.isin(event.getX(), event.getY())) {
             this.isMouseDownHere = true;
+            this.getParentWindow().getFocus().onLostFocus(event);
+            this.getParentWindow().setFocus(this);
+            this.getParentWindow().getFocus().onGetFocus(event);
             for (EventHandler<MouseEvent> mouseEventEventHandler : this.getOnMousePressed()) {
                 if (event.isConsumed()) return;
                 mouseEventEventHandler.invoke(event);
@@ -306,7 +369,7 @@ public abstract class BaseUI extends Node {
         }
     }
 
-    protected void onMouseMoved(MouseEvent event) {
+    protected void onMouseMoved(MouseEvent event, Component component) {
         if (!this.isEnabled) return;
         if (!this.isMouseInto && this.isin(event.getX(), event.getY())) {
             this.onMouseEntered(event);
@@ -317,6 +380,7 @@ public abstract class BaseUI extends Node {
             this.isMouseInto = false;
         }
         if (this.isin(event.getX(), event.getY())) {
+            component.setCursor(this.getCursor());
             for (EventHandler<MouseEvent> mouseEventEventHandler : this.getOnMouseMoved()) {
                 if (event.isConsumed()) return;
                 mouseEventEventHandler.invoke(event);
@@ -324,7 +388,7 @@ public abstract class BaseUI extends Node {
         }
         for (int i = this.getChildren().size() - 1; i >= 0; i--) {
             if (this.getChildren().get(i) instanceof BaseUI baseUI) {
-                baseUI.onMouseMoved(event);
+                baseUI.onMouseMoved(event, component);
             }
         }
     }
@@ -341,6 +405,48 @@ public abstract class BaseUI extends Node {
                 }
                 baseUI.onMouseDragged(event);
             }
+        }
+    }
+
+    protected void onGetFocus(MouseEvent event) {
+        this.setFocus(true);
+        for (EventHandler<MouseEvent> getFocus : this.getOnGetFocus()) {
+            getFocus.invoke(event);
+        }
+    }
+
+    protected void onLostFocus(MouseEvent event) {
+        this.setFocus(false);
+        for (EventHandler<MouseEvent> lostFocus : this.getOnLostFocus()) {
+            lostFocus.invoke(event);
+        }
+    }
+
+    protected void onKeyPressed(KeyEvent event) {
+        if (!this.isEnabled) return;
+        for (EventHandler<KeyEvent> keyPressed : this.getOnKeyPressed()) {
+            keyPressed.invoke(event);
+        }
+    }
+
+    protected void onKeyReleased(KeyEvent event) {
+        if (!this.isEnabled) return;
+        for (EventHandler<KeyEvent> keyReleased : this.getOnKeyReleased()) {
+            keyReleased.invoke(event);
+        }
+    }
+
+    protected void onKeyTyped(KeyEvent event) {
+        if (!this.isEnabled) return;
+        for (EventHandler<KeyEvent> keyTyped : this.getOnKeyTyped()) {
+            keyTyped.invoke(event);
+        }
+    }
+
+    protected void onInputMethodTextChanged(InputMethodEvent event) {
+        if (!this.isEnabled) return;
+        for (EventHandler<InputMethodEvent> inputMethodTextChanged : this.getOnInputMethodTextChanged()) {
+            inputMethodTextChanged.invoke(event);
         }
     }
 
@@ -481,6 +587,7 @@ public abstract class BaseUI extends Node {
         for (BaseUI baseUI : this.getChildren()) {
             baseUI.update();
             if (baseUI.isVisible) {
+                g2d.setClip(baseUI.getClip());
                 baseUI.render(g2d);
                 baseUI.updateChildren(g2d);
             }
@@ -658,5 +765,35 @@ public abstract class BaseUI extends Node {
     public void setAlignment(Alignment alignment) {
         this.alignment = alignment;
         if (parent != null) parent.needUpdate.set(true);
+    }
+
+    protected Window getParentWindow() {
+        BaseUI baseUI = this;
+        Window ret = null;
+        while (baseUI != null) {
+            if (baseUI instanceof Window window) {
+                ret = window;
+            }
+            baseUI = baseUI.getParent();
+        }
+        return ret;
+    }
+
+    public Cursor getCursor() {
+        return cursor;
+    }
+
+    public void setCursor(Cursor cursor) {
+        this.cursor = cursor;
+        this.needUpdate.set(true);
+    }
+
+    public Shape getClip() {
+        return clip;
+    }
+
+    public void setClip(Shape clip) {
+        this.clip = clip;
+        this.needUpdate.set(true);
     }
 }

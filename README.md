@@ -1,4 +1,4 @@
-# BlockUI(V0.1.0)
+# BlockUI(V0.2.0)
 
 #### 介绍
 BlockUI是一个模仿我的世界（大部分为基岩版）UI的UI库，使用原生Java Swing编写，目前处于早起开发阶段，可扩展。
@@ -96,6 +96,8 @@ public class Main {
 一个文字按钮组件
 #### BlockToggleButton
 一个点击后才切换状态的按钮组件
+#### BlockTextField
+一个输入框组件
 
 ### 布局介绍
 #### NullLayout

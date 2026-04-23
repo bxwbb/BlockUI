@@ -11,7 +11,10 @@ public abstract class AbstractBlockLabel extends BaseUI {
 
     private String text = "Label";
     private String font = "微软雅黑";
+    private boolean showAllText = false;
 
+    private int offsetX = 0;
+    private int offsetY = 0;
     private Alignment align = Alignment.CENTER;
 
     // 自动换行
@@ -101,5 +104,30 @@ public abstract class AbstractBlockLabel extends BaseUI {
     public void setFont(String font) {
         this.font = font;
         this.needUpdate.set(true);
+    }
+
+    public boolean isShowAllText() {
+        return showAllText;
+    }
+
+    public void setShowAllText(boolean showAllText) {
+        this.showAllText = showAllText;
+        this.needUpdate.set(true);
+    }
+
+    public int getOffsetX() {
+        return offsetX;
+    }
+
+    public void setOffsetX(int offsetX) {
+        this.offsetX = offsetX;
+    }
+
+    public int getOffsetY() {
+        return offsetY;
+    }
+
+    public void setOffsetY(int offsetY) {
+        this.offsetY = offsetY;
     }
 }
