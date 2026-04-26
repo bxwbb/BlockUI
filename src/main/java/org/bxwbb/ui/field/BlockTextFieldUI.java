@@ -42,6 +42,7 @@ public class BlockTextFieldUI extends BlockToggleButtonUI implements UI {
                 int startX = blockTextField.getBlockLabel().getAbsoluteX() + fm.stringWidth(blockTextField.getText().substring(0, blockTextField.selectStart)) + blockTextField.getBlockLabel().getOffsetX();
                 int endX = blockTextField.getBlockLabel().getAbsoluteX() + fm.stringWidth(blockTextField.getText().substring(0, blockTextField.selectEnd)) + blockTextField.getBlockLabel().getOffsetX();
                 g2d.setColor(blockTextField.getSelectColor());
+                g2d.setClip(blockTextField.getBlockLabel().getClip());
                 if (startX < endX) {
                     g2d.fillRect(startX, blockTextField.getBlockLabel().getAbsoluteY(), endX - startX, blockTextField.getBlockLabel().getHeight());
                 } else {

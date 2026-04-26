@@ -10,4 +10,5 @@ module BlockUI {
     exports org.bxwbb.ui.other;
     exports org.bxwbb.theme;
     exports org.bxwbb.event;
+    exports org.bxwbb.ui.button.radio;
 }

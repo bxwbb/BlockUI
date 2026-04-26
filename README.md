@@ -1,4 +1,18 @@
-# BlockUI(V0.2.0)
+# BlockUI(V0.3.0)
+
+feat:
+
+\* 修改了输入框控件（增加拖拽文字功能）
+
+\+ 增加对拖拽系统的支持
+
+\+ 增加单选框控件
+
+\+ 增加复选框控件
+
+fix:
+
+/ 修复了输入框选中矩形会溢出显示的问题
 
 #### 介绍
 BlockUI是一个模仿我的世界（大部分为基岩版）UI的UI库，使用原生Java Swing编写，目前处于早起开发阶段，可扩展。
@@ -98,6 +112,10 @@ public class Main {
 一个点击后才切换状态的按钮组件
 #### BlockTextField
 一个输入框组件
+#### BlockRadioButton
+一个单选按钮组件
+#### BlockCheckBox
+一个复选框组件
 
 ### 布局介绍
 #### NullLayout
@@ -107,5 +125,8 @@ public class Main {
 
 ### 贡献方式
 直接在github上提交pr即可，感谢您的贡献
+
+### 使用方法
+在控件都实现的差不多之后会发布到maven的中央仓库中
 
 感谢使用

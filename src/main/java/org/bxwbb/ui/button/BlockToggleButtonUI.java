@@ -14,7 +14,7 @@ public class BlockToggleButtonUI extends BlockPaneUI implements UI {
         super.update(component);
         BlockToggleButton blockButton = (BlockToggleButton) component;
         blockButton.setBorderOuterColor(blockButton.isHover() ? Color.WHITE : blockButton.baseOuterBorderColor);
-        blockButton.setBackgroundColor(blockButton.isDown() ? ColorUtil.brighter(blockButton.baseBackgroundColor, 2) : blockButton.baseBackgroundColor);
+        blockButton.setBackgroundColor(blockButton.getDownColor() == null ? blockButton.isDown() ? ColorUtil.brighter(blockButton.baseBackgroundColor, 2) : blockButton.baseBackgroundColor : !blockButton.isDown() ? blockButton.baseBackgroundColor : blockButton.getDownColor());
     }
 
     @Override

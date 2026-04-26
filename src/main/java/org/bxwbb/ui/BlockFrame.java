@@ -5,6 +5,7 @@ import org.bxwbb.theme.ColorTheme;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.dnd.*;
 import java.awt.event.*;
 
 public class BlockFrame extends BaseUI implements Window {
@@ -104,6 +105,16 @@ public class BlockFrame extends BaseUI implements Window {
         this.renderLoop = new RenderLoop(this.canvasPanel::repaint);
     }
 
+    public void createDefaultDragGestureRecognizer(int action, DragGestureListener dragGestureListener) {
+        DragSource dragSource = DragSource.getDefaultDragSource();
+        dragSource.createDefaultDragGestureRecognizer(this.canvasPanel, action, dragGestureListener);
+    }
+
+    @Override
+    public void dropTarget(DropTargetListener dropTargetListener) {
+        new DropTarget(this.canvasPanel, dropTargetListener);
+    }
+
     @Override
     public void setVisible(boolean visible) {
         jFrame.getContentPane().setPreferredSize(new Dimension(getWidth(), getHeight()));
@@ -136,9 +147,10 @@ public class BlockFrame extends BaseUI implements Window {
             g.fillRect(0, 0, Integer.MAX_VALUE, Integer.MAX_VALUE);
 
             window.update();
-            window.render((Graphics2D) g);
+            window.updateChildren();
             g.setClip(window.getClip());
-            window.updateChildren((Graphics2D) g);
+            window.render((Graphics2D) g);
+            window.renderChildren((Graphics2D) g);
         }
     }
 

@@ -3,6 +3,7 @@ package org.bxwbb.ui.button;
 import org.bxwbb.event.EventHandler;
 import org.bxwbb.ui.pane.BlockPane;
 
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +12,8 @@ public abstract class AbstractBlockButton extends BlockPane {
 
     private boolean isDown = false;
     private boolean isHover = false;
+
+    private Color downColor = null;
 
     private final List<EventHandler<MouseEvent>> onButtonClick = new ArrayList<>();
 
@@ -54,5 +57,17 @@ public abstract class AbstractBlockButton extends BlockPane {
                 handler.invoke(event);
             }
         }
+    }
+
+    public Color getDownColor() {
+        return downColor;
+    }
+
+    public void setDownColor(Color downColor) {
+        this.downColor = downColor;
+    }
+
+    public Color getDrawColor() {
+        return isDown() ? getDownColor() == null ? getBackgroundColor() : getDownColor() : getBackgroundColor();
     }
 }

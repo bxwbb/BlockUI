@@ -10,6 +10,8 @@ public class BlockToggleButton extends AbstractBlockButton {
     protected Color baseBackgroundColor;
     protected Color baseOuterBorderColor;
 
+    private boolean setChangeDown = true;
+
     public BlockToggleButton() {
         super();
         init();
@@ -33,9 +35,18 @@ public class BlockToggleButton extends AbstractBlockButton {
         this.addOnMouseReleased(e -> {
             if (this.isin(e.getX(), e.getY())) {
                 this.onButtonClick(e);
+                if (this.isSetChangeDown()) this.setDown(!this.isDown());
             } else {
                 this.setHover(false);
             }
         });
+    }
+
+    public boolean isSetChangeDown() {
+        return setChangeDown;
+    }
+
+    public void setSetChangeDown(boolean setChangeDown) {
+        this.setChangeDown = setChangeDown;
     }
 }

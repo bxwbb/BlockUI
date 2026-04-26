@@ -1,6 +1,8 @@
 package org.bxwbb.ui;
 
 import java.awt.*;
+import java.awt.dnd.DragGestureListener;
+import java.awt.dnd.DropTargetListener;
 
 public interface Window {
 
@@ -11,5 +13,9 @@ public interface Window {
     void setVisible(boolean visible);
 
     Component getComponent();
+
+    void createDefaultDragGestureRecognizer(int action, DragGestureListener dragGestureListener);
+
+    void dropTarget(DropTargetListener dropTargetListener);
 
 }

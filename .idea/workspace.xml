@@ -4,29 +4,25 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6fc22a46-7ae7-49ea-924c-9da46884540c" name="更改" comment="v0.1.0&#10;feat:&#10;+ 增加了一些基本控件&#10;+ 增加了分离式布局系统&#10;+ 增加了可更换的UI委托绘制&#10;fix:&#10;/ 修复了线性布局宽度（或高度）设置错误的BUG&#10;todo:&#10;增加更多控件&#10;增加动画系统">
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/bxwbb/ui/button/BlockButtonUI.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/bxwbb/ui/button/BlockImageButtonUI.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/bxwbb/ui/button/BlockLabelButtonUI.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/bxwbb/ui/button/BlockToggleButtonUI.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/bxwbb/ui/field/AbstractTextField.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/bxwbb/ui/field/BlockTextField.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/bxwbb/ui/field/BlockTextFieldUI.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/bxwbb/ui/pane/BlockEmptyPane.java" afterDir="false" />
+    <list default="true" id="6fc22a46-7ae7-49ea-924c-9da46884540c" name="更改" comment="v0.2.0&#10;feat:&#10;+ 增加了输入框控件&#10;+ 增加了空的占位pane&#10;* 修改了一些UI的绘制和更新逻辑&#10;+ 增加了对键盘事件的支持&#10;fix:&#10;&#10;todo:&#10;- 增加更多控件&#10;- 增加动画系统">
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/bxwbb/ui/button/BlockCheckBox.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/bxwbb/ui/button/BlockCheckBoxUI.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/bxwbb/ui/button/radio/AbstractBlockRadioGroup.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/bxwbb/ui/button/radio/BlockRadioButton.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/bxwbb/ui/button/radio/BlockRadioGroup.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/dictionaries/project.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dictionaries/project.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/module-info.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/bxwbb/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bxwbb/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/bxwbb/ui/BaseUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bxwbb/ui/BaseUI.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/bxwbb/ui/BlockFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bxwbb/ui/BlockFrame.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/bxwbb/ui/Window.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bxwbb/ui/Window.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/bxwbb/ui/button/BlockButton.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bxwbb/ui/button/BlockButton.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/bxwbb/ui/button/BlockImageButton.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bxwbb/ui/button/BlockImageButton.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/bxwbb/ui/button/BlockLabelButton.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bxwbb/ui/button/BlockLabelButton.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/bxwbb/ui/button/AbstractBlockButton.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bxwbb/ui/button/AbstractBlockButton.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/bxwbb/ui/button/BlockToggleButton.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bxwbb/ui/button/BlockToggleButton.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/bxwbb/ui/label/AbstractBlockLabel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bxwbb/ui/label/AbstractBlockLabel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/bxwbb/ui/label/BlockLabelUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bxwbb/ui/label/BlockLabelUI.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/bxwbb/ui/layout/LinearLayout.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bxwbb/ui/layout/LinearLayout.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/bxwbb/ui/button/BlockToggleButtonUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bxwbb/ui/button/BlockToggleButtonUI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/bxwbb/ui/field/BlockTextField.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bxwbb/ui/field/BlockTextField.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/bxwbb/ui/field/BlockTextFieldUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bxwbb/ui/field/BlockTextFieldUI.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -55,6 +51,14 @@
     &quot;accountId&quot;: &quot;5c785376-e980-4ba2-9b05-7cf063521659&quot;
   }
 }</component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="localRepository" value="C:\Users\admin\.m2\repository" />
+        <option name="userSettingsFile" value="F:\IDEA\IntelliJ IDEA Community Edition 2025.1.4\plugins\maven\lib\maven3\conf\settings.xml" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
   </component>
@@ -65,15 +69,28 @@
   <component name="ProjectViewState">
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;E:/OnGithub/BlockUI/src/main/java/org/bxwbb&quot;,
-    &quot;应用程序.Main.executor&quot;: &quot;Run&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Maven.BlockUI [clean].executor": "Run",
+    "Maven.BlockUI [deploy].executor": "Run",
+    "Maven.BlockUI [package].executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "E:/OnGithub/BlockUI/src/main/java/org/bxwbb",
+    "settings.editor.selected.configurable": "MavenSettings",
+    "应用程序.BlockDragGreenDemo.executor": "Run",
+    "应用程序.CustomDragDemo.executor": "Run",
+    "应用程序.CustomDragPaintDemo.executor": "Run",
+    "应用程序.CustomPaintDnDDemo.executor": "Run",
+    "应用程序.DnDTwoLabelDemo.executor": "Run",
+    "应用程序.FINAL_DRAG_FIX.executor": "Run",
+    "应用程序.GreenRectDragDemo.executor": "Run",
+    "应用程序.Main.executor": "Run",
+    "应用程序.SimpleWorkingDragDemo.executor": "Run",
+    "应用程序.UltimateDragDemo.executor": "Run"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="E:\OnGithub\BlockUI\src\main\java\org\bxwbb" />
@@ -121,7 +138,15 @@
       <option name="project" value="LOCAL" />
       <updated>1776611786208</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="v0.2.0&#10;feat:&#10;+ 增加了输入框控件&#10;+ 增加了空的占位pane&#10;* 修改了一些UI的绘制和更新逻辑&#10;+ 增加了对键盘事件的支持&#10;fix:&#10;&#10;todo:&#10;- 增加更多控件&#10;- 增加动画系统">
+      <option name="closed" value="true" />
+      <created>1776944924678</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1776944924678</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -137,6 +162,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="v0.1.0&#10;feat:&#10;+ 增加了一些基本控件&#10;+ 增加了分离式布局系统&#10;+ 增加了可更换的UI委托绘制&#10;fix:&#10;/ 修复了线性布局宽度（或高度）设置错误的BUG&#10;todo:&#10;增加更多控件&#10;增加动画系统" />
-    <option name="LAST_COMMIT_MESSAGE" value="v0.1.0&#10;feat:&#10;+ 增加了一些基本控件&#10;+ 增加了分离式布局系统&#10;+ 增加了可更换的UI委托绘制&#10;fix:&#10;/ 修复了线性布局宽度（或高度）设置错误的BUG&#10;todo:&#10;增加更多控件&#10;增加动画系统" />
+    <MESSAGE value="v0.2.0&#10;feat:&#10;+ 增加了输入框控件&#10;+ 增加了空的占位pane&#10;* 修改了一些UI的绘制和更新逻辑&#10;+ 增加了对键盘事件的支持&#10;fix:&#10;&#10;todo:&#10;- 增加更多控件&#10;- 增加动画系统" />
+    <option name="LAST_COMMIT_MESSAGE" value="v0.2.0&#10;feat:&#10;+ 增加了输入框控件&#10;+ 增加了空的占位pane&#10;* 修改了一些UI的绘制和更新逻辑&#10;+ 增加了对键盘事件的支持&#10;fix:&#10;&#10;todo:&#10;- 增加更多控件&#10;- 增加动画系统" />
   </component>
 </project>

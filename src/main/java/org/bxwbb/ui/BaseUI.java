@@ -6,12 +6,18 @@ import org.bxwbb.ui.layout.Layout;
 import org.bxwbb.ui.layout.NullLayout;
 
 import java.awt.*;
+import java.awt.datatransfer.Transferable;
+import java.awt.dnd.DropTargetDragEvent;
+import java.awt.dnd.DropTargetDropEvent;
+import java.awt.dnd.DropTargetEvent;
+import java.awt.dnd.DropTargetListener;
 import java.awt.event.InputMethodEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Predicate;
 
 public abstract class BaseUI extends Node {
 
@@ -583,13 +589,21 @@ public abstract class BaseUI extends Node {
         setMaxHeight(Integer.MAX_VALUE);
     }
 
-    public void updateChildren(Graphics2D g2d) {
+    public void updateChildren() {
         for (BaseUI baseUI : this.getChildren()) {
-            baseUI.update();
+            if (baseUI.isVisible && baseUI.needUpdate.get()) {
+                baseUI.update();
+                baseUI.updateChildren();
+            }
+        }
+    }
+
+    public void renderChildren(Graphics2D g2d) {
+        for (BaseUI baseUI : this.getChildren()) {
             if (baseUI.isVisible) {
                 g2d.setClip(baseUI.getClip());
                 baseUI.render(g2d);
-                baseUI.updateChildren(g2d);
+                baseUI.renderChildren(g2d);
             }
         }
     }
@@ -795,5 +809,57 @@ public abstract class BaseUI extends Node {
     public void setClip(Shape clip) {
         this.clip = clip;
         this.needUpdate.set(true);
+    }
+
+    public void createDefaultDragGestureRecognizer(int action, Cursor cursor, Transferable transferable, Predicate<Point> booleanSupplier) {
+        BaseUI self = this;
+        this.getParentWindow().createDefaultDragGestureRecognizer(action, dge -> {
+            Point dragPoint = dge.getDragOrigin();
+            if (self.isin(dragPoint.x, dragPoint.y) && booleanSupplier.test(dragPoint)) {
+                dge.startDrag(cursor, transferable);
+            }
+        });
+    }
+
+    public void dropTarget(DropTargetListener dropTargetListener) {
+        BaseUI self = this;
+        getParentWindow().dropTarget(new DropTargetListener() {
+            @Override
+            public void dragEnter(DropTargetDragEvent dtde) {
+                Point dragPoint = dtde.getLocation();
+                if (self.isin(dragPoint.x, dragPoint.y)) {
+                    dropTargetListener.dragEnter(dtde);
+                }
+            }
+
+            @Override
+            public void dragOver(DropTargetDragEvent dtde) {
+                Point dragPoint = dtde.getLocation();
+                if (self.isin(dragPoint.x, dragPoint.y)) {
+                    dropTargetListener.dragOver(dtde);
+                }
+            }
+
+            @Override
+            public void dropActionChanged(DropTargetDragEvent dtde) {
+                Point dragPoint = dtde.getLocation();
+                if (self.isin(dragPoint.x, dragPoint.y)) {
+                    dropTargetListener.dropActionChanged(dtde);
+                }
+            }
+
+            @Override
+            public void dragExit(DropTargetEvent dte) {
+                dropTargetListener.dragExit(dte);
+            }
+
+            @Override
+            public void drop(DropTargetDropEvent dtde) {
+                Point dropPoint = dtde.getLocation();
+                if (self.isin(dropPoint.x, dropPoint.y)) {
+                    dropTargetListener.drop(dtde);
+                }
+            }
+        });
     }
 }
