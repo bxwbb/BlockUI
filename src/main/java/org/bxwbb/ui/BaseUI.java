@@ -1,9 +1,14 @@
 package org.bxwbb.ui;
 
+import org.bxwbb.animation.AnimationManager;
+import org.bxwbb.animation.EaseType;
+import org.bxwbb.animation.ValueAnimation;
 import org.bxwbb.event.EventHandler;
+import org.bxwbb.theme.ColorTheme;
 import org.bxwbb.ui.layout.Alignment;
 import org.bxwbb.ui.layout.Layout;
 import org.bxwbb.ui.layout.NullLayout;
+import org.bxwbb.util.ShapeUtil;
 
 import java.awt.*;
 import java.awt.datatransfer.Transferable;
@@ -15,13 +20,31 @@ import java.awt.event.InputMethodEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 
 public abstract class BaseUI extends Node {
 
     protected static BaseUI root = null;
+    protected static final ExecutorService UI_UPDATE_EXECUTOR_SERVICE = new ThreadPoolExecutor(
+            4,
+            10,
+            0L,
+            TimeUnit.MILLISECONDS,
+            new LinkedBlockingDeque<>(),
+            (r) -> {
+                Thread t = new Thread(r, "BlockUI-Update");
+                t.setDaemon(true);
+                return t;
+            }
+    );
 
     private final List<BaseUI> children = new ArrayList<>();
     private BaseUI parent = root;
@@ -42,19 +65,28 @@ public abstract class BaseUI extends Node {
     private int borderLeft = 0;
     private int borderRight = 0;
     private int borderBottom = 0;
+    private int extentLayoutX = 0;
+    private int extentLayoutY = 0;
+    private int extentWidth = 0;
+    private int extentHeight = 0;
     private float weightWidth = 1.0f;
     private float weightHeight = 1.0f;
     private boolean isFocus = false;
     private boolean isVisible = true;
     private boolean isEnabled = true;
+    private boolean dontLayout = false;
+    private boolean clipChildren = true;
     private Layout layout = new NullLayout();
     private Alignment alignment = Alignment.CENTER;
     private Cursor cursor = Cursor.getDefaultCursor();
-    private Shape clip;
+    private Rectangle clip = new Rectangle();
+    public final static Map<BaseUI, Rectangle> parentClips = new HashMap<>();
 
     protected final AtomicBoolean needUpdate = new AtomicBoolean(true);
+    protected final AtomicBoolean needLayout = new AtomicBoolean(true);
     protected boolean isMouseInto = false;
     protected boolean isMouseDownHere = false;
+    protected boolean isDragging = false;
 
     private final List<EventHandler<MouseEvent>> onMouseClicked = new ArrayList<>();
     private final List<EventHandler<MouseEvent>> onMousePressed = new ArrayList<>();
@@ -87,6 +119,7 @@ public abstract class BaseUI extends Node {
 
     public void setLayoutX(int layoutX) {
         this.layoutX = layoutX;
+        this.needLayout.set(true);
         this.needUpdate.set(true);
     }
 
@@ -96,6 +129,7 @@ public abstract class BaseUI extends Node {
 
     public void setLayoutY(int layoutY) {
         this.layoutY = layoutY;
+        this.needLayout.set(true);
         this.needUpdate.set(true);
     }
 
@@ -144,6 +178,7 @@ public abstract class BaseUI extends Node {
 
     public void setMaxWidth(int maxWidth) {
         this.maxWidth = maxWidth;
+        this.needLayout.set(true);
     }
 
     public int getMaxHeight() {
@@ -152,6 +187,7 @@ public abstract class BaseUI extends Node {
 
     public void setMaxHeight(int maxHeight) {
         this.maxHeight = maxHeight;
+        this.needLayout.set(true);
     }
 
     public int getMinWidth() {
@@ -160,6 +196,7 @@ public abstract class BaseUI extends Node {
 
     public void setMinWidth(int minWidth) {
         this.minWidth = minWidth;
+        this.needLayout.set(true);
     }
 
     public int getMinHeight() {
@@ -168,15 +205,19 @@ public abstract class BaseUI extends Node {
 
     public void setMinHeight(int minHeight) {
         this.minHeight = minHeight;
+        this.needLayout.set(true);
     }
 
     public final void update() {
-        this.getLayout().layout(this);
         if (ui != null) ui.update(this);
         this.needUpdate.set(false);
     }
 
     public final void render(Graphics2D g2d) {
+        if (this.needUpdate.get()) {
+            g2d.setColor(ColorTheme.COLOR_PROGRAM_BASE);
+            g2d.fillRect(this.getAbsoluteX(), this.getAbsoluteY(), this.getPreferredWidth(), this.getPreferredHeight());
+        }
         if (ui != null) ui.render(g2d, this);
     }
 
@@ -189,7 +230,7 @@ public abstract class BaseUI extends Node {
     }
 
     public boolean isin(int px, int py) {
-        return isin(px, py, this.getAbsoluteX(), this.getAbsoluteY(), this.getWidth(), this.getHeight());
+        return isin(px, py, this.getAbsoluteX(), this.getAbsoluteY(), this.getWidth(), this.getHeight()) && this.getParent() != null && parentClips.containsKey(this.getParent()) && parentClips.get(this.getParent()).contains(px, py);
     }
 
     public boolean isFocus() {
@@ -344,6 +385,7 @@ public abstract class BaseUI extends Node {
     }
 
     protected void onMouseReleased(MouseEvent event) {
+        this.isDragging = false;
         if (!this.isEnabled) return;
         if (this.isMouseDownHere) {
             this.isMouseDownHere = false;
@@ -401,14 +443,23 @@ public abstract class BaseUI extends Node {
 
     protected void onMouseDragged(MouseEvent event) {
         if (!this.isEnabled) return;
+        if (!this.isMouseInto && this.isin(event.getX(), event.getY())) {
+            this.onMouseEntered(event);
+            this.isMouseInto = true;
+        }
+        if (this.isMouseInto && !this.isin(event.getX(), event.getY())) {
+            this.onMouseExited(event);
+            this.isMouseInto = false;
+        }
+        if ((this.isin(event.getX(), event.getY())) || isDragging) {
+            if (!isDragging) isDragging = true;
+            for (EventHandler<MouseEvent> mouseEventEventHandler : this.getOnMouseDragged()) {
+                if (event.isConsumed()) return;
+                mouseEventEventHandler.invoke(event);
+            }
+        }
         for (int i = this.getChildren().size() - 1; i >= 0; i--) {
             if (this.getChildren().get(i) instanceof BaseUI baseUI) {
-                if (baseUI.isin(event.getX(), event.getY())) {
-                    for (EventHandler<MouseEvent> mouseEventEventHandler : baseUI.getOnMouseDragged()) {
-                        if (event.isConsumed()) return;
-                        mouseEventEventHandler.invoke(event);
-                    }
-                }
                 baseUI.onMouseDragged(event);
             }
         }
@@ -471,6 +522,7 @@ public abstract class BaseUI extends Node {
     public void setLayout(Layout layout) {
         this.layout = layout;
         this.needUpdate.set(true);
+        this.needLayout.set(true);
     }
 
     public float getWeightWidth() {
@@ -480,6 +532,7 @@ public abstract class BaseUI extends Node {
     public void setWeightWidth(float weightWidth) {
         this.weightWidth = weightWidth;
         this.needUpdate.set(true);
+        this.needLayout.set(true);
     }
 
     public float getWeightHeight() {
@@ -489,6 +542,7 @@ public abstract class BaseUI extends Node {
     public void setWeightHeight(float weightHeight) {
         this.weightHeight = weightHeight;
         this.needUpdate.set(true);
+        this.needLayout.set(true);
     }
 
     public int setGreatWidth(int width) {
@@ -564,11 +618,13 @@ public abstract class BaseUI extends Node {
         if (this.parent != null) {
             this.parent.getChildren().add(this);
         }
+        this.needLayout.set(true);
     }
 
     public void addChild(BaseUI child) {
         child.setParent(this);
         this.needUpdate.set(true);
+        this.needLayout.set(true);
     }
 
     public void removeChild(BaseUI child) {
@@ -593,15 +649,55 @@ public abstract class BaseUI extends Node {
         for (BaseUI baseUI : this.getChildren()) {
             if (baseUI.isVisible && baseUI.needUpdate.get()) {
                 baseUI.update();
-                baseUI.updateChildren();
+                clip.setRect(
+                        getAbsoluteX(),
+                        getAbsoluteY(),
+                        getPreferredWidth(),
+                        getPreferredHeight()
+                );
+                if (baseUI.getParent() != null)
+                    parentClips.put(baseUI, ShapeUtil.intersectRect(parentClips.get(baseUI.getParent()), baseUI.getClip()));
             }
+            baseUI.updateChildren();
+        }
+    }
+
+    public void layout() {
+        for (BaseUI child : getChildren()) {
+            child.layout();
+        }
+        this.getLayout().layout(this);
+        this.needUpdate.set(true);
+        if (!getChildren().isEmpty()) {
+            List<BaseUI> children = getChildren();
+            BaseUI first = children.getFirst();
+            int minX = first.getLayoutX();
+            int minY = first.getLayoutY();
+            int maxX = first.getEndX();
+            int maxY = first.getEndY();
+            for (BaseUI child : children) {
+                minX = Math.min(minX, child.getLayoutX());
+                minY = Math.min(minY, child.getLayoutY());
+                maxX = Math.max(maxX, child.getEndX());
+                maxY = Math.max(maxY, child.getEndY());
+            }
+            this.extentLayoutX = minX;
+            this.extentLayoutY = minY;
+            this.extentWidth = maxX;
+            this.extentHeight = maxY;
+        } else {
+            this.extentLayoutX = 0;
+            this.extentLayoutY = 0;
+            this.extentWidth = 0;
+            this.extentHeight = 0;
         }
     }
 
     public void renderChildren(Graphics2D g2d) {
         for (BaseUI baseUI : this.getChildren()) {
             if (baseUI.isVisible) {
-                g2d.setClip(baseUI.getClip());
+                if (this.isClipChildren() && baseUI.getParent() != null && parentClips.containsKey(baseUI.getParent()))
+                    g2d.setClip(parentClips.get(baseUI.getParent()));
                 baseUI.render(g2d);
                 baseUI.renderChildren(g2d);
             }
@@ -617,6 +713,7 @@ public abstract class BaseUI extends Node {
         this.maxWidth = getPreferredWidth();
         this.minWidth = getPreferredWidth();
         this.needUpdate.set(true);
+        this.needLayout.set(true);
     }
 
     public int getPreferredHeight() {
@@ -628,6 +725,7 @@ public abstract class BaseUI extends Node {
         this.maxHeight = getPreferredHeight();
         this.minHeight = getPreferredHeight();
         this.needUpdate.set(true);
+        this.needLayout.set(true);
     }
 
     public int getAbsoluteX() {
@@ -647,6 +745,7 @@ public abstract class BaseUI extends Node {
     public void setPaddingTop(int paddingTop) {
         this.paddingTop = paddingTop;
         this.needUpdate.set(true);
+        this.needLayout.set(true);
     }
 
     public int getPaddingLeft() {
@@ -656,6 +755,7 @@ public abstract class BaseUI extends Node {
     public void setPaddingLeft(int paddingLeft) {
         this.paddingLeft = paddingLeft;
         this.needUpdate.set(true);
+        this.needLayout.set(true);
     }
 
     public int getPaddingRight() {
@@ -665,6 +765,7 @@ public abstract class BaseUI extends Node {
     public void setPaddingRight(int paddingRight) {
         this.paddingRight = paddingRight;
         this.needUpdate.set(true);
+        this.needLayout.set(true);
     }
 
     public int getPaddingBottom() {
@@ -674,18 +775,21 @@ public abstract class BaseUI extends Node {
     public void setPaddingBottom(int paddingBottom) {
         this.paddingBottom = paddingBottom;
         this.needUpdate.set(true);
+        this.needLayout.set(true);
     }
 
     public void setPaddingHorizontal(int paddingHorizontal) {
         this.paddingLeft = paddingHorizontal;
         this.paddingRight = paddingHorizontal;
         this.needUpdate.set(true);
+        this.needLayout.set(true);
     }
 
     public void setPaddingVertical(int paddingVertical) {
         this.paddingTop = paddingVertical;
         this.paddingBottom = paddingVertical;
         this.needUpdate.set(true);
+        this.needLayout.set(true);
     }
 
     public void setPadding(int padding) {
@@ -717,6 +821,7 @@ public abstract class BaseUI extends Node {
     public void setBorderLeft(int borderLeft) {
         this.borderLeft = borderLeft;
         this.needUpdate.set(true);
+        this.needLayout.set(true);
     }
 
     public int getBorderRight() {
@@ -726,6 +831,7 @@ public abstract class BaseUI extends Node {
     public void setBorderRight(int borderRight) {
         this.borderRight = borderRight;
         this.needUpdate.set(true);
+        this.needLayout.set(true);
     }
 
     public int getBorderBottom() {
@@ -735,23 +841,42 @@ public abstract class BaseUI extends Node {
     public void setBorderBottom(int borderBottom) {
         this.borderBottom = borderBottom;
         this.needUpdate.set(true);
+        this.needLayout.set(true);
     }
 
     public void setBorderHorizontal(int borderHorizontal) {
         this.borderLeft = borderHorizontal;
         this.borderRight = borderHorizontal;
         this.needUpdate.set(true);
+        this.needLayout.set(true);
     }
 
     public void setBorderVertical(int borderVertical) {
         this.borderTop = borderVertical;
         this.borderBottom = borderVertical;
         this.needUpdate.set(true);
+        this.needLayout.set(true);
     }
 
     public void setBorder(int border) {
         this.setBorderHorizontal(border);
         this.setBorderVertical(border);
+    }
+
+    public int getExtentLayoutX() {
+        return extentLayoutX;
+    }
+
+    public int getExtentLayoutY() {
+        return extentLayoutY;
+    }
+
+    public int getExtentWidth() {
+        return extentWidth;
+    }
+
+    public int getExtentHeight() {
+        return extentHeight;
     }
 
     public boolean isVisible() {
@@ -761,6 +886,7 @@ public abstract class BaseUI extends Node {
     public void setVisible(boolean visible) {
         isVisible = visible;
         this.needUpdate.set(true);
+        this.needLayout.set(true);
     }
 
     public boolean isEnabled() {
@@ -770,6 +896,19 @@ public abstract class BaseUI extends Node {
     public void setEnabled(boolean enabled) {
         isEnabled = enabled;
         this.needUpdate.set(true);
+    }
+
+    public boolean isClipChildren() {
+        return clipChildren;
+    }
+
+    public void setClipChildren(boolean clipChildren) {
+        this.clipChildren = clipChildren;
+        this.needUpdate.set(true);
+    }
+
+    public boolean isDragging() {
+        return isDragging;
     }
 
     public Alignment getAlignment() {
@@ -793,6 +932,17 @@ public abstract class BaseUI extends Node {
         return ret;
     }
 
+    protected BaseUI getParentWindowUI() {
+        BaseUI baseUI = this;
+        while (baseUI != null) {
+            if (baseUI instanceof Window) {
+                return baseUI;
+            }
+            baseUI = baseUI.getParent();
+        }
+        return root;
+    }
+
     public Cursor getCursor() {
         return cursor;
     }
@@ -802,11 +952,11 @@ public abstract class BaseUI extends Node {
         this.needUpdate.set(true);
     }
 
-    public Shape getClip() {
+    public Rectangle getClip() {
         return clip;
     }
 
-    public void setClip(Shape clip) {
+    public void setClip(Rectangle clip) {
         this.clip = clip;
         this.needUpdate.set(true);
     }
@@ -861,5 +1011,25 @@ public abstract class BaseUI extends Node {
                 }
             }
         });
+    }
+
+    public boolean isDontLayout() {
+        return dontLayout;
+    }
+
+    public void setDontLayout(boolean dontLayout) {
+        this.dontLayout = dontLayout;
+    }
+
+    public ValueAnimation createValueAnimation(long duration, long delay, EaseType easeType, float from, float to, boolean reverse) {
+        return new ValueAnimation(duration, delay, easeType, this, from, to, reverse);
+    }
+
+    public ValueAnimation createValueAnimation(long duration, long delay, EaseType easeType, float from, float to) {
+        return this.createValueAnimation(duration, delay, easeType, from, to, false);
+    }
+
+    public void stopAllAnimation() {
+        AnimationManager.getInstance().clearHoseAnimation(this);
     }
 }

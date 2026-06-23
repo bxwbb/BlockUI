@@ -4,11 +4,17 @@ public class BlockEmptyPane extends BlockPane {
 
     public BlockEmptyPane() {
         super();
-        setUI(null);
+        init();
     }
 
     public BlockEmptyPane(int layoutX, int layoutY, int width, int height) {
         super(layoutX, layoutY, width, height);
-        setUI(null);
+        init();
+    }
+
+    private void init() {
+        setUI(new BlockEmptyPaneUI());
+        setBorder(0);
+        setPadding(0);
     }
 }

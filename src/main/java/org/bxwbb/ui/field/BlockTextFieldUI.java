@@ -39,8 +39,8 @@ public class BlockTextFieldUI extends BlockToggleButtonUI implements UI {
             g2d.setFont(new Font(blockTextField.getBlockLabel().getFont(), Font.PLAIN, blockTextField.getBlockLabel().getHeight()));
             FontMetrics fm = g2d.getFontMetrics();
             if (blockTextField.selectEnd != blockTextField.selectStart && blockTextField.selectEnd >= 0 && blockTextField.selectStart >= 0) {
-                int startX = blockTextField.getBlockLabel().getAbsoluteX() + fm.stringWidth(blockTextField.getText().substring(0, blockTextField.selectStart)) + blockTextField.getBlockLabel().getOffsetX();
-                int endX = blockTextField.getBlockLabel().getAbsoluteX() + fm.stringWidth(blockTextField.getText().substring(0, blockTextField.selectEnd)) + blockTextField.getBlockLabel().getOffsetX();
+                int startX = blockTextField.getBlockLabel().getAbsoluteX() + (blockTextField instanceof BlockPasswordField ? 6 * (blockTextField.selectStart) + 5 * (blockTextField.selectStart - 1) : fm.stringWidth(blockTextField.getText().substring(0, blockTextField.selectStart))) + blockTextField.getBlockLabel().getOffsetX();
+                int endX = blockTextField.getBlockLabel().getAbsoluteX() + (blockTextField instanceof BlockPasswordField ? 6 * (blockTextField.selectEnd) + 5 * (blockTextField.selectEnd - 1) : fm.stringWidth(blockTextField.getText().substring(0, blockTextField.selectEnd))) + blockTextField.getBlockLabel().getOffsetX();
                 g2d.setColor(blockTextField.getSelectColor());
                 g2d.setClip(blockTextField.getBlockLabel().getClip());
                 if (startX < endX) {
@@ -50,7 +50,7 @@ public class BlockTextFieldUI extends BlockToggleButtonUI implements UI {
                 }
             }
             if (curseShow) {
-                int cursePosX = blockTextField.getBlockLabel().getAbsoluteX() + fm.stringWidth(blockTextField.getText().substring(0, blockTextField.getCursorIndex())) + blockTextField.getBlockLabel().getOffsetX();
+                int cursePosX = blockTextField.getBlockLabel().getAbsoluteX() + (blockTextField instanceof BlockPasswordField ? 6 * (blockTextField.getCursorIndex()) + 5 * (blockTextField.getCursorIndex() - 1) : fm.stringWidth(blockTextField.getText().substring(0, blockTextField.getCursorIndex()))) + blockTextField.getBlockLabel().getOffsetX();
                 g2d.setColor(blockTextField.getCursorColor());
                 g2d.fillRect(cursePosX, blockTextField.getBlockLabel().getAbsoluteY(), blockTextField.getCursorWidth(), blockTextField.getBlockLabel().getHeight());
                 blockTextField.fm = fm;

@@ -474,7 +474,7 @@ public class BlockTextField extends AbstractTextField {
         int w = 0;
         int i = 0;
         for (; i < t.length(); i++) {
-            int cw = fm.charWidth(t.charAt(i));
+            int cw = this instanceof BlockPasswordField ? 6 + 5 : fm.charWidth(t.charAt(i));
             if (x < w + cw / 2) break;
             w += cw;
         }

@@ -8,7 +8,9 @@ module BlockUI {
     exports org.bxwbb.ui.button;
     exports org.bxwbb.ui.image;
     exports org.bxwbb.ui.other;
+    exports org.bxwbb.ui.bar;
     exports org.bxwbb.theme;
     exports org.bxwbb.event;
     exports org.bxwbb.ui.button.radio;
+    exports org.bxwbb.animation;
 }

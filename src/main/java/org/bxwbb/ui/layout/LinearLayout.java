@@ -38,7 +38,7 @@ public class LinearLayout extends AbstractLinearLayout {
             int visibleCount = 0;
             for (int i = 0; i < size; i++) {
                 BaseUI c = children.get(i);
-                if (!c.isVisible()) continue;
+                if (!c.isVisible() || c.isDontLayout()) continue;
                 int w = c.getWidth();
                 totalW += w;
                 int h = c.getHeight();
@@ -64,7 +64,7 @@ public class LinearLayout extends AbstractLinearLayout {
             }
 
             for (BaseUI c : children) {
-                if (!c.isVisible()) continue;
+                if (!c.isVisible() || c.isDontLayout()) continue;
                 c.setGreatHeight(pH);
                 c.setLayout(startX, startY);
                 startX += c.getWidth() + spaceX;
@@ -78,7 +78,7 @@ public class LinearLayout extends AbstractLinearLayout {
             int visibleCount = 0;
             for (int i = 0; i < size; i++) {
                 BaseUI c = children.get(i);
-                if (!c.isVisible()) continue;
+                if (!c.isVisible() || c.isDontLayout()) continue;
                 int h = c.getHeight();
                 totalH += h;
                 int w = c.getWidth();
@@ -104,7 +104,7 @@ public class LinearLayout extends AbstractLinearLayout {
             }
 
             for (BaseUI c : children) {
-                if (!c.isVisible()) continue;
+                if (!c.isVisible() || c.isDontLayout()) continue;
                 c.setGreatWidth(pW);
                 c.setLayout(startX, startY);
                 startY += c.getHeight() + spaceY;
@@ -119,7 +119,7 @@ public class LinearLayout extends AbstractLinearLayout {
 
         for (int i = 0; i < size; i++) {
             BaseUI c = children.get(i);
-            if (!c.isVisible()) continue;
+            if (!c.isVisible() || c.isDontLayout()) continue;
             c.setGreatWidth(c.getMinWidth());
             totalMin += c.getWidth();
             visibleCount++;
@@ -135,7 +135,7 @@ public class LinearLayout extends AbstractLinearLayout {
             float totalWeight = 0;
             for (int i = 0; i < size; i++) {
                 BaseUI c = children.get(i);
-                if (!c.isVisible() || frozen[i]) continue;
+                if (!c.isVisible() || c.isDontLayout() || frozen[i]) continue;
                 totalWeight += c.getWeightWidth();
             }
             if (totalWeight <= 0) break;
@@ -143,7 +143,7 @@ public class LinearLayout extends AbstractLinearLayout {
             int used = 0;
             for (int i = 0; i < size; i++) {
                 BaseUI c = children.get(i);
-                if (!c.isVisible() || frozen[i]) continue;
+                if (!c.isVisible() || c.isDontLayout() || frozen[i]) continue;
 
                 int add = (int) (free * (c.getWeightWidth() / totalWeight));
                 int old = c.getWidth();
@@ -164,7 +164,7 @@ public class LinearLayout extends AbstractLinearLayout {
 
         for (int i = 0; i < size; i++) {
             BaseUI c = children.get(i);
-            if (!c.isVisible()) continue;
+            if (!c.isVisible() || c.isDontLayout()) continue;
             c.setGreatHeight(c.getMinHeight());
             totalMin += c.getHeight();
             visibleCount++;
@@ -180,7 +180,7 @@ public class LinearLayout extends AbstractLinearLayout {
             float totalWeight = 0;
             for (int i = 0; i < size; i++) {
                 BaseUI c = children.get(i);
-                if (!c.isVisible() || frozen[i]) continue;
+                if (!c.isVisible() || c.isDontLayout() || frozen[i]) continue;
                 totalWeight += c.getWeightHeight();
             }
             if (totalWeight <= 0) break;
@@ -188,7 +188,7 @@ public class LinearLayout extends AbstractLinearLayout {
             int used = 0;
             for (int i = 0; i < size; i++) {
                 BaseUI c = children.get(i);
-                if (!c.isVisible() || frozen[i]) continue;
+                if (!c.isVisible() || c.isDontLayout() || frozen[i]) continue;
 
                 int add = (int) (free * (c.getWeightHeight() / totalWeight));
                 int old = c.getHeight();

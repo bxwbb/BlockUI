@@ -21,13 +21,17 @@ public class BlockButton extends AbstractBlockButton {
 
     private void init() {
         this.setUI(new BlockButtonUI());
-        horizontalExtension();
-        verticalExtension();
         baseBackgroundColor = getBackgroundColor();
         baseOuterBorderColor = getBorderOuterColor();
         this.setLayout(new LinearLayout());
-        this.addOnMouseEntered(e -> this.setHover(true));
-        this.addOnMouseExited(e -> this.setHover(false));
+        this.addOnMouseEntered(e -> {
+            if (this.isDragging()) this.setDown(true);
+            this.setHover(true);
+        });
+        this.addOnMouseExited(e -> {
+            if (this.isDragging()) this.setDown(false);
+            this.setHover(false);
+        });
         this.addOnMousePressed(e -> this.setDown(true));
         this.addOnMouseReleased(e -> {
             if (this.isin(e.getX(), e.getY())) {

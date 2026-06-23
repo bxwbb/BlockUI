@@ -9,7 +9,6 @@ import java.awt.*;
 public class BlockPaneUI implements UI {
     @Override
     public void update(BaseUI component) {
-        
     }
 
     @Override
